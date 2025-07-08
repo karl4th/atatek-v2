@@ -1,0 +1,6 @@
+[submodule "backend"]
+	path = backend
+	url = https://github.com/BagzhanKarl/atatek-backend.git
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/BagzhanKarl/atatek-frontend.git
