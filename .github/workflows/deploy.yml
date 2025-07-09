@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: SSH Deploy with Debug
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v0.1.10  # ✅ Стабильная версия
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
@@ -26,4 +26,4 @@ jobs:
             export POSTGRES_USER=${{ secrets.DB_USER }}
             export POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD }}
             docker compose up -d
-          debug: true  # 💥 Это покажет все команды и подключения
+          debug: true
