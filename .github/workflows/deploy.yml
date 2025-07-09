@@ -17,7 +17,6 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.KEY }}
           script: |
-            sudo -i
             cd ${{ secrets.PATH }}
             git submodule update --remote --merge
             git pull origin main
