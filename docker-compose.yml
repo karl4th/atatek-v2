@@ -19,7 +19,7 @@ services:
     container_name: backend
     environment:
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
-      - DB_HOST=postgres_db
+      - DB_HOST=postgres
       - DB_PORT=5432
       - DB_NAME=${POSTGRES_DB}
       - DB_USER=${POSTGRES_USER}
