@@ -18,7 +18,6 @@ jobs:
           script: |
             cd ${{ secrets.PATH }}
             git pull origin main
-            docker login --username karl4th --password ${{ secrets.DOC_TOKEN }} ghcr.io
             export JWT_SECRET_KEY=${{ secrets.JWT_SECRET }}
             export POSTGRES_DB=${{ secrets.DB_NAME }}
             export POSTGRES_USER=${{ secrets.DB_USER }}
