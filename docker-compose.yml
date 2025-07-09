@@ -1,0 +1,76 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - app_network
+
+  backend:
+    image: ghcr.io/karl4th/atatek-backend:latest
+    container_name: backend
+    environment:
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - DB_HOST=postgres_db
+      - DB_PORT=5432
+      - DB_NAME=${POSTGRES_DB}
+      - DB_USER=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    networks:
+      - app_network
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    networks:
+      - app_network
+
+  nginx:
+    image: nginx:stable
+    container_name: nginx_proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - backend
+    networks:
+      - app_network
+    restart: unless-stopped
+
+  frontend:
+    image: ghcr.io/karl4th/atatek-frontend:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    container_name: atatek-frontend
+    restart: unless-stopped
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
