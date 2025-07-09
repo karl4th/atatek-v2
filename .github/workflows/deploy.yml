@@ -19,8 +19,8 @@ jobs:
             cd ${{ secrets.PATH }}
             git pull origin main
             docker compose down -v
-            JWT_SECRET_KEY=${{ secrets.JWT_SECRET }} \
-            POSTGRES_DB=${{ secrets.DB_NAME }} \
-            POSTGRES_USER=${{ secrets.DB_USER }} \
-            POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD }} \
+            export JWT_SECRET_KEY=${{ secrets.JWT_SECRET }} \
+            export POSTGRES_DB=${{ secrets.DB_NAME }} \
+            export POSTGRES_USER=${{ secrets.DB_USER }} \
+            export POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD }} \
             sudo docker compose up -d
