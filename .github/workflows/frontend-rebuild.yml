@@ -8,25 +8,6 @@ jobs:
   rebuild-frontend:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          submodules: true
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Update frontend submodule
-        run: |
-          cd frontend
-          git fetch origin
-          git checkout main
-          git pull origin main
-          cd ..
-          git add frontend
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git commit -m "Update frontend submodule after build" || echo "No changes to commit"
-          git push origin main
-
       - name: Rebuild frontend containers
         uses: appleboy/ssh-action@v0.1.10
         with:
@@ -35,7 +16,6 @@ jobs:
           key: ${{ secrets.KEY }}
           script: |
             cd ${{ secrets.PATH }}
-            git pull origin main
-            git submodule update --init --recursive
-            sudo docker compose build frontend
-            sudo docker compose up -d frontend 
+            sudo docker compose pull frontend
+            sudo docker compose up -d frontend
+            sudo docker image prune -f 
