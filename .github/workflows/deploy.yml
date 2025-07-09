@@ -18,6 +18,7 @@ jobs:
           key: ${{ secrets.KEY }}
           port: 22
           script: |
+            git config --global --add safe.directory ${{ secrets.PATH }}
             cd ${{ secrets.PATH }}
             git pull origin main
             git submodule update --remote --merge
@@ -25,5 +26,5 @@ jobs:
             export POSTGRES_DB=${{ secrets.DB_NAME }}
             export POSTGRES_USER=${{ secrets.DB_USER }}
             export POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD }}
-            docker compose up -d
+            sudo docker compose up -d
           debug: true
