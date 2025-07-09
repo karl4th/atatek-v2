@@ -10,15 +10,15 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - name: Update and restart
+      - name: SSH Deploy with Debug
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.KEY }}
+          port: 22
           script: |
             cd ${{ secrets.PATH }}
-            git submodule update --remote --merge
             git pull origin main
             git submodule update --remote --merge
             export JWT_SECRET_KEY=${{ secrets.JWT_SECRET }}
@@ -26,5 +26,4 @@ jobs:
             export POSTGRES_USER=${{ secrets.DB_USER }}
             export POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD }}
             docker compose up -d
-
-  
+          debug: true  # 💥 Это покажет все команды и подключения
