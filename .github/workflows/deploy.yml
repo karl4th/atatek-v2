@@ -17,8 +17,8 @@ jobs:
           key: ${{ secrets.KEY }}
           script: |
             cd ${{ secrets.PATH }}
-            docker compose down -v
             git pull origin main
+            docker compose down -v
             JWT_SECRET_KEY=${{ secrets.JWT_SECRET }} \
             POSTGRES_DB=${{ secrets.DB_NAME }} \
             POSTGRES_USER=${{ secrets.DB_USER }} \
