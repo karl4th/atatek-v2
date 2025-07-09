@@ -11,13 +11,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Update and restart
-        uses: appleboy/ssh-action@v1
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.KEY }}
           script: |
+            sudo -i
             cd ${{ secrets.PATH }}
+            git submodule update --remote --merge
             git pull origin main
             git submodule update --remote --merge
             export JWT_SECRET_KEY=${{ secrets.JWT_SECRET }}
