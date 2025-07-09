@@ -1,65 +1,26 @@
-name: Simple Update code and restart backend
+name: Deploy
 
 on:
   push:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.DOC_TOKEN }}
-      
-      - name: Build and push backend
-        uses: docker/build-push-action@v5
-        with:
-          context: ./backend
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ghcr.io/karl4th/atatek-backend:latest
-      
-      - name: Build and push frontend
-        uses: docker/build-push-action@v5
-        with:
-          context: ./frontend
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ghcr.io/karl4th/atatek-frontend:latest
-
-  update:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: SSH Deploy with Debug
+      - name: Start SSH Agent
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.HOST }}
           username: ubuntu
           key: ${{ secrets.KEY }}
-          port: 22
           script: |
-            git config --global --add safe.directory ${{ secrets.PATH }}
             cd ${{ secrets.PATH }}
             git pull origin main
-
-            echo "POSTGRES_USER=${{ secrets.DB_USER }}" > .env
-            echo "POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-            echo "POSTGRES_DB=${{ secrets.DB_NAME }}" >> .env
-            echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET }}" >> .env
-
-            sudo docker compose pull || true
-            sudo docker compose up -d 
-          debug: true
+            docker login --username karl4th --password ${{ secrets.DOC_TOKEN }} ghcr.io
+            export JWT_SECRET_KEY=${{ secrets.JWT_SECRET }}
+            export POSTGRES_DB=${{ secrets.DB_NAME }}
+            export POSTGRES_USER=${{ secrets.DB_USER }}
+            export POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD }}
+            sudo docker compose up -d
