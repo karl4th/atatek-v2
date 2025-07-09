@@ -1,0 +1,28 @@
+name: Simple Update code and restart backend
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update and restart
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.KEY }}
+          script: |
+            cd ${{ secrets.PATH }}
+            git pull origin main
+            export JWT_SECRET_KEY=${{ secrets.JWT_SECRET }}
+            export POSTGRES_DB=${{ secrets.DB_NAME }}
+            export POSTGRES_USER=${{ secrets.DB_USER }}
+            export POSTGRES_PASSWORD=${{ secrets.DB_PASSWORD }}
+            docker compose up -d
+
+  
