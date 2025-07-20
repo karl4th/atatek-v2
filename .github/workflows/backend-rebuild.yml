@@ -1,14 +1,14 @@
-name: Frontend Rebuild
+name: Backend Rebuild
 
 on:
   repository_dispatch:
-    types: [frontend-build-complete]
+    types: [backend-build-complete]
 
 jobs:
-  rebuild-frontend:
+  rebuild-backend:
     runs-on: ubuntu-latest
     steps:
-      - name: Rebuild frontend containers
+      - name: Rebuild backend containers
         uses: appleboy/ssh-action@v0.1.10
         with:
           host: ${{ secrets.HOST }}
@@ -20,7 +20,7 @@ jobs:
             # Настройка аутентификации с GitHub Container Registry
             echo ${{ secrets.PASKAGES_TOKEN }} | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin
             
-            sudo docker compose pull frontend
-            sudo docker compose up -d frontend
+            sudo docker compose pull backend
+            sudo docker compose up -d backend
             sudo docker image prune -f 
             
