@@ -68,6 +68,14 @@ services:
     networks:
       - app_network
 
+  jaai-landing:
+    image: ghcr.io/karl4th/jaai-landing-page:latest
+    ports:
+      - "3001:3001"
+    container_name: jaai-landing
+    restart: unless-stopped
+    networks:
+
 networks:
   app_network:
     driver: bridge
