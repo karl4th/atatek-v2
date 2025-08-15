@@ -51,6 +51,7 @@ services:
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - /etc/letsencrypt:/etc/letsencrypt:ro
+      - ./uploads:/app/public/uploads
     depends_on:
       - backend
     networks:
@@ -85,4 +86,3 @@ networks:
 
 volumes:
   postgres_data:
-  
