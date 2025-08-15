@@ -67,6 +67,8 @@ services:
     restart: unless-stopped
     networks:
       - app_network
+    volumes:
+      - ./uploads:/app/public/uploads
 
   jaai-landing:
     image: ghcr.io/karl4th/jaai-landing-page:latest
@@ -83,3 +85,4 @@ networks:
 
 volumes:
   postgres_data:
+  
