@@ -8,14 +8,14 @@ jobs:
   rebuild-backend:
     runs-on: ubuntu-latest
     steps:
-      - name: Rebuild backend containers
+      - name: Start SSH Agent
         uses: appleboy/ssh-action@v0.1.10
         with:
-          host: ${{ secrets.HOST }}
+          host: ${{ secrets.SSH_HOST }}
           username: ubuntu
-          key: ${{ secrets.KEY }}
+          key: ${{ secrets.SSH_SECRET_KEY }}
           script: |
-            cd ${{ secrets.PATH }}
+            cd ${{ secrets.PROJECT_PATH }}
 
             export DB_NAME=${{ secrets.DB_NAME }}
             export DB_PASSWORD=${{ secrets.DB_PASSWORD }}

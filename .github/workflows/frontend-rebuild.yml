@@ -8,14 +8,20 @@ jobs:
   rebuild-frontend:
     runs-on: ubuntu-latest
     steps:
-      - name: Rebuild frontend containers
+      - name: Start SSH Agent
         uses: appleboy/ssh-action@v0.1.10
         with:
-          host: ${{ secrets.HOST }}
+          host: ${{ secrets.SSH_HOST }}
           username: ubuntu
-          key: ${{ secrets.KEY }}
+          key: ${{ secrets.SSH_SECRET_KEY }}
           script: |
-            cd ${{ secrets.PATH }}
+            cd ${{ secrets.PROJECT_PATH }}
+
+            export DB_NAME=${{ secrets.DB_NAME }}
+            export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            export JWT_SECRET=${{ secrets.JWT_SECRET }}
+            export DB_USER=${{ secrets.DB_USER }}
+            git pull origin main
             
             # Настройка аутентификации с GitHub Container Registry
             echo ${{ secrets.PASKAGES_TOKEN }} | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin
