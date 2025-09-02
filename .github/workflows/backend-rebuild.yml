@@ -33,7 +33,7 @@ jobs:
             git pull origin main
             
             # Login to GitHub Container Registry
-            echo ${{ secrets.GITHUB_TOKEN }} | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin || \
+            echo ${{ secrets.PASKAGES_TOKEN }} | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin || \
               echo "Warning: Failed to login to GitHub Container Registry"
             
             # Pull and restart backend service
