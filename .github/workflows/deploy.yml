@@ -21,7 +21,7 @@ jobs:
             export DB_NAME=${{ secrets.DB_NAME }}
             export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             export JWT_SECRET=${{ secrets.JWT_SECRET }}
-            export DB_HOST=${{ secrets.DB_HOST }}
+            export DB_USER=${{ secrets.DB_USER }}
             git pull origin main
             
             # Настройка аутентификации с GitHub Container Registry
