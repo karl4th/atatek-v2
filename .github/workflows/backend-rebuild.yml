@@ -17,16 +17,32 @@ jobs:
           script: |
             cd ${{ secrets.PROJECT_PATH }}
 
+            # Set environment variables
             export DB_NAME=${{ secrets.DB_NAME }}
             export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             export JWT_SECRET=${{ secrets.JWT_SECRET }}
+            export JWT_SECRET_KEY=${{ secrets.JWT_SECRET }}  # For backend compatibility
             export DB_USER=${{ secrets.DB_USER }}
+            
+            # Pull latest changes
             git pull origin main
             
-            # Настройка аутентификации с GitHub Container Registry
-            echo ${{ secrets.PASKAGES_TOKEN }} | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            # Login to GitHub Container Registry
+            echo ${{ secrets.PASKAGES_TOKEN }} | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin || \
+              echo "Warning: Failed to login to GitHub Container Registry"
             
+            # Pull and restart backend service
             sudo docker compose pull backend
-            sudo docker compose up -d backend
-            sudo docker image prune -f 
+            sudo docker compose up -d --force-recreate backend
+            
+            # Clean up unused images
+            sudo docker image prune -f
+            
+            # Verify backend is running
+            if ! sudo docker ps | grep -q atatek_backend; then
+              echo "Error: Backend container is not running"
+              exit 1
+            fi
+            
+            echo "Backend successfully redeployed"
             
