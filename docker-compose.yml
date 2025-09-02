@@ -30,6 +30,7 @@ services:
       - db
     networks:
       - atatek_network
+      
 
   adminer:
     image: adminer
