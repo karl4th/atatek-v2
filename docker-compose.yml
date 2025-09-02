@@ -1,35 +1,35 @@
 services:
-  postgres:
+  db:
     image: postgres:16
-    container_name: postgres
+    container_name: atatek_db
     environment:
-      POSTGRES_USER: atatek-user
-      POSTGRES_PASSWORD: atatek-password
-      POSTGRES_DB: atatek-db
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
     networks:
-      - app_network
+      - atatek_network
 
   backend:
     image: ghcr.io/karl4th/atatek-backend:latest
-    container_name: backend
+    container_name: atatek_backend
     environment:
-      - JWT_SECRET_KEY=atatek-secret
-      - DB_HOST=postgres
+      - JWT_SECRET_KEY=${JWT_SECRET}
+      - DB_HOST=db
       - DB_PORT=5432
-      - DB_NAME=atatek-db
-      - DB_USER=atatek-user
-      - DB_PASSWORD=atatek-password
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
     ports:
       - "8000:8000"
     depends_on:
-      - postgres
+      - db
     networks:
-      - app_network
+      - atatek_network
 
   adminer:
     image: adminer
@@ -38,9 +38,9 @@ services:
       - "8080:8080"
     restart: unless-stopped
     depends_on:
-      - postgres
+      - db
     networks:
-      - app_network
+      - atatek_network
 
   nginx:
     image: nginx:stable
@@ -52,10 +52,8 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - /etc/letsencrypt:/etc/letsencrypt:ro
       - ./uploads:/app/public/uploads
-    depends_on:
-      - backend
     networks:
-      - app_network
+      - atatek_network
     restart: unless-stopped
 
   frontend:
@@ -67,21 +65,12 @@ services:
     container_name: atatek-frontend
     restart: unless-stopped
     networks:
-      - app_network
+      - atatek_network
     volumes:
       - ./uploads:/app/public/uploads
 
-  jaai-landing:
-    image: ghcr.io/karl4th/jaai-landing-page:latest
-    ports:
-      - "3001:3000"
-    container_name: jaai-landing
-    restart: unless-stopped
-    networks:
-      - app_network
-
 networks:
-  app_network:
+  atatek_network:
     driver: bridge
 
 volumes:
