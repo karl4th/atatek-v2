@@ -17,23 +17,28 @@ jobs:
           script: |
             cd ${{ secrets.PROJECT_PATH }}
 
-            # Set environment variables
-            export DB_NAME=${{ secrets.DB_NAME }}
-            export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            export JWT_SECRET=${{ secrets.JWT_SECRET }}
-            export JWT_SECRET_KEY=${{ secrets.JWT_SECRET }}  # For backend compatibility
-            export DB_USER=${{ secrets.DB_USER }}
+            # Create .env file
+            cat << 'EOF' > .env
+            DB_NAME=${{ secrets.DB_NAME }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            JWT_SECRET_KEY=${{ secrets.JWT_SECRET }}
+            DB_USER=${{ secrets.DB_USER }}
+            EOF
+            
+            # Set permissions for the .env file
+            chmod 600 .env
             
             # Pull latest changes
             git pull origin main
             
             # Login to GitHub Container Registry
-            echo ${{ secrets.PASKAGES_TOKEN }} | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin || \
+            echo ${{ secrets.GITHUB_TOKEN }} | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin || \
               echo "Warning: Failed to login to GitHub Container Registry"
             
             # Pull and restart backend service
-            sudo docker compose pull backend
-            sudo docker compose up -d --force-recreate backend
+            sudo docker compose --env-file .env pull backend
+            sudo docker compose --env-file .env up -d --force-recreate backend
             
             # Clean up unused images
             sudo docker image prune -f

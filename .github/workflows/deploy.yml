@@ -20,25 +20,30 @@ jobs:
             
             cd ${{ secrets.PROJECT_PATH }}
             
-            # Set environment variables
-            export DB_NAME=${{ secrets.DB_NAME }}
-            export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            export JWT_SECRET=${{ secrets.JWT_SECRET }}
-            export JWT_SECRET_KEY=${{ secrets.JWT_SECRET }}  # For backend compatibility
-            export DB_USER=${{ secrets.DB_USER }}
+            # Create .env file
+            cat << 'EOF' > .env
+            DB_NAME=${{ secrets.DB_NAME }}
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            JWT_SECRET_KEY=${{ secrets.JWT_SECRET }}
+            DB_USER=${{ secrets.DB_USER }}
+            EOF
             
             # Pull latest changes
             git fetch origin main
             git reset --hard origin/main
             
+            # Set permissions for the .env file
+            chmod 600 .env
+            
             # Login to GitHub Container Registry
-            echo ${{ secrets.PASKAGES_TOKEN }} | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin || \
+            echo ${{ secrets.GITHUB_TOKEN }} | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin || \
               echo "Warning: Failed to login to GitHub Container Registry"
             
             # Pull and start all services
             sudo docker compose pull
             sudo docker compose down
-            sudo docker compose up -d --build --remove-orphans
+            sudo docker compose --env-file .env up -d --build --remove-orphans
             
             # Clean up unused images and volumes
             sudo docker system prune -f
